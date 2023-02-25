@@ -20,6 +20,7 @@ chrome.contextMenus.create(
 chrome.contextMenus.onClicked.addListener(function(selectedData) {
   console.log(selectedData.selectionText);
   selectedText = selectedData.selectionText;
+
   if (selectedData.menuItemId === "copyNotes" && selectedData.selectionText) {
 
   }
