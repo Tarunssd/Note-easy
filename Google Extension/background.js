@@ -19,6 +19,7 @@ chrome.contextMenus.create(
   propertiesObject
 )
 
+var fileId = "";
 // Create a new Google Doc
 function createNewGoogleDoc(token, text) {
   const metadata = {
@@ -36,10 +37,16 @@ function createNewGoogleDoc(token, text) {
   })
   .then(response => response.json())
   .then(data => {
-    const fileId = data.id;
+    fileId = data.id;
     const content = text;
     // paste text
-    fetch(`https://docs.googleapis.com/v1/documents/${fileId}:batchUpdate`, {
+    pasteText(token, fileId, content)
+  })
+  .catch(error => console.error(error));
+}
+
+function pasteText(token, fileId, content) {
+  fetch(`https://docs.googleapis.com/v1/documents/${fileId}:batchUpdate`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,15 +66,17 @@ function createNewGoogleDoc(token, text) {
     .then(response => console.log(response))
     .then(data => console.log(data))
     .catch(error => console.error(error));
-  })
-  .catch(error => console.error(error));
 }
-
 
 chrome.contextMenus.onClicked.addListener(function(selectedData) {
   console.log(selectedData.selectionText);
   const selectedText = selectedData.selectionText;
   if (selectedText) {
-    createNewGoogleDoc(ACCESS_TOKEN, selectedText)
+    if (fileId === "") {
+      createNewGoogleDoc(ACCESS_TOKEN, selectedText);
+    }
+    else {
+      pasteText(ACCESS_TOKEN, fileId, selectedText);
+    }
   }
 })
