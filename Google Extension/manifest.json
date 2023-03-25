@@ -1,13 +1,18 @@
 {
     "manifest_version": 3,
-    "name": "My extension",
+    "name": "Note Easy",
     "version": "1.0",
     "description": "makes note making easier",
     "host_permissions": ["<all_urls>"],
     "permissions": [
         "contextMenus",
-        "identity"
+        "identity",
+        "notifications",
+        "activeTab"
     ],
+    "action": {
+        "default_popup": "popup.html"
+    },
     "background": {
         "service_worker": "background.js"
     },
@@ -19,7 +24,7 @@
     ],
     "web_accessible_resources": [
     {
-        "resources": [],
+        "resources": ["index.js"],
         "matches": ["<all_urls>"]
     }
     ],

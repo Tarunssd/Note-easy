@@ -10,13 +10,23 @@ chrome.identity.getAuthToken({interactive: true}, function(token) {
 });  
 
 const propertiesObject = {
-  id: "copyNotes",
+  id: "copyNotes New",
   contexts: ["selection"],
-  title: "Copy to Google Docs"
+  title: "Copy to New Google Doc"
+}
+
+const propertiesObjectEx = {
+  id: "copyNotes Existing",
+  contexts: ["selection"],
+  title: "Copy to Existing Google Doc"
 }
 
 chrome.contextMenus.create(
   propertiesObject
+)
+
+chrome.contextMenus.create(
+  propertiesObjectEx
 )
 
 var fileId = "";
@@ -56,7 +66,7 @@ function pasteText(token, fileId, content) {
         requests: [
           {
             insertText: {
-              text: content,
+              text: content + '\n',
               endOfSegmentLocation: {},
             },
           },
@@ -68,15 +78,25 @@ function pasteText(token, fileId, content) {
     .catch(error => console.error(error));
 }
 
-chrome.contextMenus.onClicked.addListener(function(selectedData) {
-  console.log(selectedData.selectionText);
+chrome.contextMenus.onClicked.addListener(function(selectedData, tab) {
+  console.log(selectedData, tab);
   const selectedText = selectedData.selectionText;
+  const tabId = tab.id;
   if (selectedText) {
-    if (fileId === "") {
+    if (selectedData.menuItemId === "copyNotes New") {
+      fileId = "";
+      // Need to open a popup here to let the user enter new file
+
       createNewGoogleDoc(ACCESS_TOKEN, selectedText);
     }
-    else {
-      pasteText(ACCESS_TOKEN, fileId, selectedText);
+    else if (selectedData.menuItemId === "copyNotes Existing") {
+      if(fileId === "") {
+        // Need to show alert here to let user know there is no file created before
+        chrome.tabs.sendMessage(tab.id, {message: "There is no file created before!, Please select option Copy to New Google Doc"});
+      }
+      else {
+        pasteText(ACCESS_TOKEN, fileId, selectedText);
+      }
     }
   }
 })
