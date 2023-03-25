@@ -81,7 +81,6 @@ function pasteText(token, fileId, content) {
 chrome.contextMenus.onClicked.addListener(function(selectedData, tab) {
   console.log(selectedData, tab);
   const selectedText = selectedData.selectionText;
-  const tabId = tab.id;
   if (selectedText) {
     if (selectedData.menuItemId === "copyNotes New") {
       fileId = "";
