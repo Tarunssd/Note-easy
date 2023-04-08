@@ -31,9 +31,9 @@ chrome.contextMenus.create(
 
 var fileId = "";
 // Create a new Google Doc
-function createNewGoogleDoc(token, text) {
+function createNewGoogleDoc(token, text, newFileName) {
   const metadata = {
-    name: 'My New Doc',
+    name: newFileName,
     mimeType: 'application/vnd.google-apps.document'
   };
 
@@ -81,12 +81,24 @@ function pasteText(token, fileId, content) {
 chrome.contextMenus.onClicked.addListener(function(selectedData, tab) {
   console.log(selectedData, tab);
   const selectedText = selectedData.selectionText;
+  const tabId = tab.id;
   if (selectedText) {
     if (selectedData.menuItemId === "copyNotes New") {
       fileId = "";
       // Need to open a popup here to let the user enter new file
+      chrome.windows.create({
+        url: "popup.html",
+        type: "popup",
+        width: 400,
+        height: 250
+      });
 
-      createNewGoogleDoc(ACCESS_TOKEN, selectedText);
+      chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+        if (message.text) {
+          console.log(message.text);
+          createNewGoogleDoc(ACCESS_TOKEN, selectedText, message.text);
+        }
+      });      
     }
     else if (selectedData.menuItemId === "copyNotes Existing") {
       if(fileId === "") {

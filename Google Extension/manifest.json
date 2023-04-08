@@ -10,21 +10,18 @@
         "notifications",
         "activeTab"
     ],
-    "action": {
-        "default_popup": "popup.html"
-    },
     "background": {
         "service_worker": "background.js"
     },
     "content_scripts": [
         {
-          "matches": ["<all_urls>"],
-          "js": ["index.js"]
+            "matches": ["<all_urls>"],
+            "js": ["index.js"]
         }
     ],
     "web_accessible_resources": [
     {
-        "resources": ["index.js"],
+        "resources": ["index.js", "popup.html", "popup.js"],
         "matches": ["<all_urls>"]
     }
     ],
